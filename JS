@@ -1,0 +1,60 @@
+let input = document.getElementById("searchInput");
+let result = document.getElementById("searchResults");
+let spin = document.getElementById("spinner");
+
+let option = {
+    method: "GET",
+}
+
+function append(each) {
+    let div = document.createElement("div");
+    div.classList.add("result-item");
+    result.appendChild(div);
+
+    let title = document.createElement("a");
+    title.classList.add("result-title");
+    title.textContent = each.title;
+    title.href = each.link;
+    title.target = "_blank";
+    div.appendChild(title);
+
+    let breaks = document.createElement("br");
+    div.appendChild(breaks);
+
+    let link = document.createElement("a");
+    link.classList.add("result-url");
+    link.textContent = each.link;
+    link.href = each.link;
+    link.target = "_blank";
+    div.appendChild(link);
+
+    let des = document.createElement("p");
+    des.classList.add("link-description");
+    des.textContent = each.description;
+    div.appendChild(des);
+}
+
+function iterate(final) {
+    spin.classList.add("d-none");
+    for (let each of final) {
+        append(each);
+    }
+}
+
+function click(event) {
+    if (event.key === "Enter") {
+        spin.classList.remove("d-none");
+        result.textContent = "";
+        let url = "https://apis.ccbp.in/wiki-search?search=" + input.value;
+        fetch(url, option)
+            .then(function(response) {
+                return response.json()
+                    .then(function(data) {
+                        let final = data.search_results;
+                        iterate(final);
+                    });
+            });
+    }
+}
+
+input.addEventListener("keydown", click);
